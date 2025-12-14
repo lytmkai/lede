@@ -8,8 +8,13 @@
 name: OpenWrt-CI
 
 on:
-  schedule:
-    - cron: 0 20 * * *
+  workflow_dispatch:
+  inputs:
+    ssh:
+      description: 'SSH connection to Actions'
+      required: false
+      default: 'false'
+
 
 permissions:
   contents: read
@@ -47,7 +52,7 @@ jobs:
         with:
           # this might remove tools that are actually needed,
           # if set to "true" but frees about 6 GB
-          tool-cache: true
+          tool-cache: false
           # all of these default to true, but feel free to set to
           # "false" if necessary for your workflow
           android: true
@@ -58,9 +63,27 @@ jobs:
 
       - name: Update feeds
         run: |
-          sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
+          
+          sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
+
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+
+      - name: Customer Personal Information
+        run: |
+          sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
+          sed -i 's/192.168./10.0./g' package/base-files/files/bin/config_generate
+          sed -i "/\$netm/a\                                set.network.\$1.gateway='10.0.0.1'"     package/base-files/files/bin/config_generate
+          sed -i "s/network.globals.ula_prefix='auto'/network.globals.ula_prefix='fd00::1'/g"     package/base-files/files/bin/config_generate
+          sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
+          echo "DISTRIB_DESCRIPTION='LEDE-lytmkai '" >> /etc/openwrt_release
+          sed -i 's/R25.10.10/R25.12.15/g' package/lean/default-settings/files/zzz-default-settings
+          sed -i 's/luci-theme-bootstrap/luci-theme-tomato/g' feeds/luci/collections/luci/Makefile
+
+
+
+
+
 
       - name: Generate configuration file
         run: make defconfig
