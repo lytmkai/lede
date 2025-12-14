@@ -9,6 +9,12 @@ name: OpenWrt-CI
 
 on:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 
 
@@ -69,6 +75,10 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3.23
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        
       - name: Customer Personal Information
         run: |
           sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
