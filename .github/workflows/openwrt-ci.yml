@@ -100,6 +100,7 @@ jobs:
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
           cp .config ./artifact/buildinfo/
+          cp tmp/.config-package.in ./artifact/buildinfo/
           
 
       - name: Upload buildinfo
