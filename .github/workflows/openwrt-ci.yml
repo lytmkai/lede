@@ -46,19 +46,7 @@ jobs:
       - name: Checkout OpenWrt
         uses: actions/checkout@v4
 
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: false
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
+
 
       - name: Update feeds
         run: |
@@ -110,6 +98,8 @@ jobs:
           rm -rf $(find ./bin/targets/ -type d -name "packages")
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+          cp .config ./artifact/buildinfo/
+          
 
       - name: Upload buildinfo
         uses: actions/upload-artifact@v4
