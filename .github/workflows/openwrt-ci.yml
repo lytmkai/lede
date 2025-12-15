@@ -50,9 +50,6 @@ jobs:
 
       - name: Update feeds
         run: |
-          
-        
-
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -67,39 +64,20 @@ jobs:
           sed -i 's/R25.10.10/R25.12.15/g' package/lean/default-settings/files/zzz-default-settings
 
 
-
-
-
-
       - name: Generate configuration file
         run: |
+            cp x64.config .config
             make defconfig
-
+            
+            mkdir -p ./artifact/package
             mkdir -p ./artifact/buildinfo
             cp .config ./artifact/buildinfo/compile.config
-
-            
-
-      - name: Upload buildinfo
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenWrt_buildinfo
-          path: ./artifact/buildinfo/
-
-      - name: quit
-        run: |
-           exit 1
 
       - name: Download packages
         run: make download -j16
 
       - name: Compile firmware
         run: |
-
-          
-
-
-          
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
@@ -112,12 +90,10 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          mkdir -p ./artifact/package
-          mkdir -p ./artifact/buildinfo
+          
           rm -rf $(find ./bin/targets/ -type d -name "packages")
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
-          cp .config ./artifact/buildinfo/
           cp tmp/.config-package.in ./artifact/buildinfo/
           
 
