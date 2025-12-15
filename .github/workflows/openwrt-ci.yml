@@ -82,6 +82,7 @@ jobs:
 
       - name: Compile firmware
         run: |
+          cat tmp/.config-package.in
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
