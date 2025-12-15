@@ -52,7 +52,18 @@ jobs:
         run: |
           pwd
           ls
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE .config
+          if [ -e "$CONFIG_FILE" ]; then
+              echo "Using config file: $CONFIG_FILE"
+              mv "$CONFIG_FILE" .config
+          else
+              echo "ERROR: Config file '$CONFIG_FILE' not found!"
+              exit 1
+          fi
+          echo "mv config file after list:"
+          ls
+
+
+          exit 1
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
