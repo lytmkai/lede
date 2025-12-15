@@ -50,8 +50,7 @@ jobs:
 
       - name: Update feeds
         run: |
-          pwd
-          ls
+          
           if [ -e "$CONFIG_FILE" ]; then
               echo "Using config file: $CONFIG_FILE"
               mv "$CONFIG_FILE" .config
@@ -60,10 +59,9 @@ jobs:
               exit 1
           fi
           echo "mv config file after list:"
-          ls
+          pwd
+          ls -al
 
-
-          exit 1
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
